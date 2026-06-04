@@ -159,5 +159,6 @@ def main():
         print("  No se encontraron genes diferencialmente expresados con los umbrales dados.")
     print()
     print(f"Archivos guardados en: {args.output_dir}/")
+
 if __name__ == "__main__":
     main()
