@@ -18,8 +18,8 @@ def parse_args():
         description="Análisis de genes diferencialmente expresados en células infectadas con IAV"
     )
 
-    parser.add_argument("--input", required=True, help="Ruta al archivo TSV de resultados DESeq2")
-    parser.add_argument("--gff", required=True, help="Ruta al archivo GFF3 de anotaciones")
+    parser.add_argument("input", required=True, help="Ruta al archivo TSV de resultados DESeq2")
+    parser.add_argument("gff", required=True, help="Ruta al archivo GFF3 de anotaciones")
     parser.add_argument("--padj-threshold", type=float, default=0.05, help="Umbral de significancia (padj < umbral)")
     parser.add_argument("--lfc-threshold", type=float, default=1.0, help="Umbral absoluto de log2FoldChange")
     parser.add_argument("--output-dir", default="results/", help="Directorio para archivos de salida")
