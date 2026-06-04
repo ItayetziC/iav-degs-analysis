@@ -119,21 +119,28 @@ def classify_gene(
 
     return "no_change"
 
-def find_extremes(genes): 
+def find_extremes(genes):
     if not genes:
-        return "Lista de genes vacía"
+        return None
+
+    # Inicializar con el primer gen
     upregulated = genes[0]
     downregulated = genes[0]
-    representative = genes[0]
-    for gene in genes: 
+    most_significant = genes[0]
+
+    for gene in genes[1:]:
+        # Mayor log2FoldChange
         if gene["log2FoldChange"] > upregulated["log2FoldChange"]:
-            upregulated["log2FoldChange"] = gene
-        if(gene["log2FoldChange"] < downregulated["log2FoldChange"]): 
-            downregulated["log2FoldChange"] = gene
-        if(gene["padj"] < representative["padj"]):
-            representative["padj"] = gene
-    return{
-        "most_induced": (upregulated["gene_id"], upregulated["log2FoldChange"], upregulated["padj"]),
-        "most_repressed": (downregulated["gene_id"], downregulated["log2FoldChange"], downregulated["padj"]),
-        "most_representative": (representative["gene_id"], representative["log2FoldChange"], representative["padj"])
+            upregulated = gene
+        # Menor log2FoldChange
+        if gene["log2FoldChange"] < downregulated["log2FoldChange"]:
+            downregulated = gene
+        # Menor padj (más significativo)
+        if gene["padj"] < most_significant["padj"]:
+            most_significant = gene
+
+    return {
+        "upregulated": upregulated,
+        "downregulated": downregulated,
+        "most_significant": most_significant
     }

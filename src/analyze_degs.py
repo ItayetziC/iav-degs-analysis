@@ -18,8 +18,8 @@ def parse_args():
         description="Análisis de genes diferencialmente expresados en células infectadas con IAV"
     )
 
-    parser.add_argument("input", required=True, help="Ruta al archivo TSV de resultados DESeq2")
-    parser.add_argument("gff", required=True, help="Ruta al archivo GFF3 de anotaciones")
+    parser.add_argument("--input", required=True, help="Ruta al archivo TSV de resultados DESeq2")
+    parser.add_argument("--gff", required=True, help="Ruta al archivo GFF3 de anotaciones")
     parser.add_argument("--padj-threshold", type=float, default=0.05, help="Umbral de significancia (padj < umbral)")
     parser.add_argument("--lfc-threshold", type=float, default=1.0, help="Umbral absoluto de log2FoldChange")
     parser.add_argument("--output-dir", default="results/", help="Directorio para archivos de salida")
@@ -84,9 +84,9 @@ def write_summary_report(up_genes, down_genes, no_change_count, total_genes, ann
         # Genes extremos (más inducido, más reprimido, más significativo) -> como extremes es una tupla se accede a 
         # cada elemento con su clave y luego a los valores dentro de la tupla
         f.write("--- GENES EXTREMOS (entre significativos) ---\n")
-        f.write(f"Más inducido  : {extremes['most_induced'][0]}  log2FC = {extremes['most_induced'][1]:.4f}  padj = {extremes['most_induced'][2]:.6f}\n")
-        f.write(f"Más reprimido : {extremes['most_repressed'][0]}  log2FC = {extremes['most_repressed'][1]:.4f}  padj = {extremes['most_repressed'][2]:.6f}\n")
-        f.write(f"Más confiable : {extremes['most_significant'][0]}  padj   = {extremes['most_significant'][2]:.6f}\n\n")
+        f.write(f"Más inducido  : {extremes['upregulated']['gene_id']}  log2FC = {extremes['upregulated']['log2FoldChange']:.4f}  padj = {extremes['upregulated']['padj']:.6f}\n")
+        f.write(f"Más reprimido : {extremes['downregulated']['gene_id']}  log2FC = {extremes['downregulated']['log2FoldChange']:.4f}  padj = {extremes['downregulated']['padj']:.6f}\n")
+        f.write(f"Más confiable : {extremes['most_significant']['gene_id']}  padj   = {extremes['most_significant']['padj']:.6f}\n\n")
         
         # Lista de genes upregulated con descripción
         f.write("--- GENES UPREGULATED ---\n")
@@ -127,7 +127,14 @@ def main():
             no_change_count += 1
     
     total_genes = len(genes)
-    extremes = find_extremes(up_genes + down_genes)  # Solo entre los significativos
+    significant_genes = up_genes + down_genes
+    if significant_genes:
+        extremes = find_extremes(significant_genes)
+    else:
+        extremes = None  
+
+
+
     write_genes(up_genes, "upregulated", args.output_dir, annotations)  
     write_genes(down_genes, "downregulated", args.output_dir, annotations)
     write_summary_report(up_genes, down_genes, no_change_count, total_genes, annotations,
@@ -151,13 +158,14 @@ def main():
     print()
     print("--- Genes extremos (significativos) ---")
     # Asegurarse de que extremes tenga valores válidos (puede ser que no haya significativos)
-    if up_count + down_count > 0:
-        print(f"  Más inducido  : {extremes['most_induced'][0]:8s}   log2FC = {extremes['most_induced'][1]:8.4f}  padj = {extremes['most_induced'][2]:.6f}")
-        print(f"  Más reprimido : {extremes['most_repressed'][0]:8s}   log2FC = {extremes['most_repressed'][1]:8.4f}  padj = {extremes['most_repressed'][2]:.6f}")
-        print(f"  Más confiable : {extremes['most_significant'][0]:8s}   padj   = {extremes['most_significant'][2]:.6f}")
+    if up_count + down_count > 0 and extremes is not None:
+        print(f"  Más inducido  : {extremes['upregulated']['gene_id']:8s}   log2FC = {extremes['upregulated']['log2FoldChange']:.4f}  padj = {extremes['upregulated']['padj']:.6f}")
+        print(f"  Más reprimido : {extremes['downregulated']['gene_id']:8s}   log2FC = {extremes['downregulated']['log2FoldChange']:.4f}  padj = {extremes['downregulated']['padj']:.6f}")
+        print(f"  Más confiable : {extremes['most_significant']['gene_id']:8s}   padj   = {extremes['most_significant']['padj']:.6f}")
+            
     else:
         print("  No se encontraron genes diferencialmente expresados con los umbrales dados.")
-    print()
+
     print(f"Archivos guardados en: {args.output_dir}/")
 
 if __name__ == "__main__":
