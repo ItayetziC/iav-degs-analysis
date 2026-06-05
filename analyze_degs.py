@@ -17,7 +17,7 @@ def parse_args():
     parser = argparse.ArgumentParser(
         description="Análisis de genes diferencialmente expresados en células infectadas con IAV"
     )
-
+# Define los argumentos de línea de comandos con descripciones claras y valores por defecto
     parser.add_argument("--input", required=True, help="Ruta al archivo TSV de resultados DESeq2")
     parser.add_argument("--gff", required=True, help="Ruta al archivo GFF3 de anotaciones")
     parser.add_argument("--padj-threshold", type=float, default=0.05, help="Umbral de significancia (padj < umbral)")
@@ -53,7 +53,7 @@ def write_genes(genes: list, category: str, output_dir: str, annotations: dict):
             log2fc = gene["log2FoldChange"]
             padj = gene["padj"]
 # Buscar descripción en el diccionario, si no existe usar "sin anotación"
-            desc = annotations.get(gene_id, "sin anotación")
+            desc = annotations.get(gene_id, "sin anotacion")
             f.write(f"{gene_id}\t{log2fc:.4f}\t{padj:.6f}\t{desc}\n")
 
 def write_summary_report(up_genes, down_genes, no_change_count, total_genes, annotations,
@@ -61,18 +61,20 @@ def write_summary_report(up_genes, down_genes, no_change_count, total_genes, ann
     """
     Genera el archivo summary_report.txt con el resumen del análisis.
     """
+# Crea el directorio de salida si no existe    
     os.makedirs(output_dir, exist_ok=True)
+# Construye la ruta completa del archivo de resumen 
     output_path = os.path.join(output_dir, "summary_report.txt")
     
     with open(output_path, "w") as f:
-        # Escribir cabecera
-        f.write("=== ANÁLISIS DE GENES DIFERENCIALMENTE EXPRESADOS ===\n")
+# Escribir cabecera
+        f.write("=== ANALISIS DE GENES DIFERENCIALMENTE EXPRESADOS ===\n")
         f.write(f"Archivo DESeq2: {input_file}\n")
         f.write(f"Archivo GFF   : {gff_file}\n")
         f.write(f"Umbral padj   : {padj_thr}\n")
         f.write(f"Umbral |log2FC|: {lfc_thr}\n\n")
         
-        # Conteos de genes y porcentajes respecto al total
+# Conteos de genes y porcentajes respecto al total
         up_count = len(up_genes)
         down_count = len(down_genes)
         f.write("--- RESULTADOS ---\n")
@@ -81,24 +83,23 @@ def write_summary_report(up_genes, down_genes, no_change_count, total_genes, ann
         f.write(f"Downregulated : {down_count} ({down_count/total_genes*100:.1f}%)\n")
         f.write(f"No change     : {no_change_count} ({no_change_count/total_genes*100:.1f}%)\n\n")
         
-        # Genes extremos (más inducido, más reprimido, más significativo) -> como extremes es una tupla se accede a 
-        # cada elemento con su clave y luego a los valores dentro de la tupla
+        # Genes extremos (más inducido, más reprimido, más significativo) 
         f.write("--- GENES EXTREMOS (entre significativos) ---\n")
-        f.write(f"Más inducido  : {extremes['upregulated']['gene_id']}  log2FC = {extremes['upregulated']['log2FoldChange']:.4f}  padj = {extremes['upregulated']['padj']:.6f}\n")
-        f.write(f"Más reprimido : {extremes['downregulated']['gene_id']}  log2FC = {extremes['downregulated']['log2FoldChange']:.4f}  padj = {extremes['downregulated']['padj']:.6f}\n")
-        f.write(f"Más confiable : {extremes['most_significant']['gene_id']}  padj   = {extremes['most_significant']['padj']:.6f}\n\n")
+        f.write(f"Mas inducido  : {extremes['upregulated']['gene_id']}  log2FC = {extremes['upregulated']['log2FoldChange']:.4f}  padj = {extremes['upregulated']['padj']:.6f}\n")
+        f.write(f"Mas reprimido : {extremes['downregulated']['gene_id']}  log2FC = {extremes['downregulated']['log2FoldChange']:.4f}  padj = {extremes['downregulated']['padj']:.6f}\n")
+        f.write(f"Mas confiable : {extremes['most_significant']['gene_id']}  padj   = {extremes['most_significant']['padj']:.6f}\n\n")
         
         # Lista de genes upregulated con descripción
         f.write("--- GENES UPREGULATED ---\n")
         f.write("gene_id\tlog2FoldChange\tpadj\tdescription\n")
         for gene in up_genes:
-            desc = annotations.get(gene["gene_id"], "sin anotación")
+            desc = annotations.get(gene["gene_id"], "sin anotacion")
             f.write(f"{gene['gene_id']}\t{gene['log2FoldChange']:.4f}\t{gene['padj']:.6f}\t{desc}\n")
         
         f.write("\n--- GENES DOWNREGULATED ---\n")
         f.write("gene_id\tlog2FoldChange\tpadj\tdescription\n")
         for gene in down_genes:
-            desc = annotations.get(gene["gene_id"], "sin anotación")
+            desc = annotations.get(gene["gene_id"], "sin anotacion")
             f.write(f"{gene['gene_id']}\t{gene['log2FoldChange']:.4f}\t{gene['padj']:.6f}\t{desc}\n")
 
 def main():
