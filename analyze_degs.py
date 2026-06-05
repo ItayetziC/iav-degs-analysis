@@ -117,7 +117,7 @@ def main():
     up_genes = []
     down_genes = [] 
     no_change_count = 0
-
+# Clasifica cada gen según los umbrales de padj y log2FoldChange
     for gene in genes:
         category = classify_gene(gene["log2FoldChange"], gene["padj"], args.padj_threshold, args.lfc_threshold)
         if category == "upregulated":
@@ -126,16 +126,15 @@ def main():
             down_genes.append(gene)
         else:
             no_change_count += 1
-    
+# Conteo total de genes analizados    
     total_genes = len(genes)
     significant_genes = up_genes + down_genes
+# Encontrar genes extremos solo entre los significativos (up y down)
     if significant_genes:
         extremes = find_extremes(significant_genes)
     else:
         extremes = None  
-
-
-
+# Guardar resultados en archivos separados y el resumen general
     write_genes(up_genes, "upregulated", args.output_dir, annotations)  
     write_genes(down_genes, "downregulated", args.output_dir, annotations)
     write_summary_report(up_genes, down_genes, no_change_count, total_genes, annotations,
