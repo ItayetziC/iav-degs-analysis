@@ -121,8 +121,7 @@
 
 ---
 
+### Fase 6. Documentación
+  - Ayuda en redacción de documentos como README.md, diagrama_flujo y documentación con supervición del estuduiante y cambios 
 **Declaración final:**  
-El estudiante tomó todas las decisiones de diseño, escribió el código, realizó los cambios estructurales y corrigió los errores. La IA actuó como un recurso de consulta, proporcionando explicaciones, alternativas y detectando problemas lógicos. 
-
-
-NOTA: La documentación fue realizada por IA con cambios realizados por el estudiante
+El estudiante tomó todas las decisiones de diseño, escribió el código, realizó los cambios estructurales y corrigió los errores. La IA actuó como un recurso de consulta, proporcionando explicaciones, alternativas y detectando problemas lógicos. La documentación fue realizada por IA con cambios realizados por el estudiante
