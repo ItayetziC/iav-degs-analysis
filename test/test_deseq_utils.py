@@ -1,4 +1,7 @@
-# tests/test_deseq_utils.py
+# test/test_deseq_utils.py
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 from deseq_utils import classify_gene, find_extremes
 
@@ -31,6 +34,8 @@ def test_find_extremes_returns_correct_keys():
         {"gene_id": "gene3", "log2FoldChange": 1.0, "padj": 0.001},
     ]   
     extremes = find_extremes(genes)
-    assert "most_induced" in extremes, "Expected key 'most_induced' in extremes"
-    assert "most_repressed" in extremes, "Expected key 'most_repressed' in extremes"
+    assert "upregulated" in extremes, "Expected key 'upregulated' in extremes"
+    assert "downregulated" in extremes, "Expected key 'downregulated' in extremes"
     assert "most_significant" in extremes, "Expected key 'most_significant' in extremes"
+
+
